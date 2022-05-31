@@ -1,0 +1,18 @@
+#### AUTH ROUTE REQUEST ##### 
+
+# Signup Request
+POST  http://localhost:5000/auth/signup
+Content-Type: application/json
+
+{
+    "email":"sumreenali11@gmail.com",
+    "password":"123456"
+}
+
+# Admin Signup Request
+
+# POST  http://localhost:5000/auth/adminSignup
+
+# Login Request
+
+POST  http://localhost:5000/auth/login

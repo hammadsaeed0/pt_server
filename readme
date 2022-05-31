@@ -1,0 +1,92 @@
+JWT authentication and authourization
+
+for that we use 
+express => for nodejs wrapper 
+mongoose => for database queries
+morgan  => for handling console
+jsonwebtoken => for managaing web tokens ,
+bcrypt => for encrypting and decrypting passsword,
+http-errors => for handling http error gracefully
+@hap/joi => for handling schema validation efficiently
+nodemon => for auto restarting the server whenever the code updated 
+dotenv => for managaing env variables
+redis => in memory data structure,  here we are using it to store the refresh token
+
+flow of token 
+we use access token => validity 1hr
+and refresh token  => validity 1year or more
+
+the client send the authentication request if it authenticated successfully the server 
+send the Protected route (with pair of access token as authorization header) 
+if the access token is valid the server send the response
+ else if it is not valid it will throw 401 forbidden error
+ which means the jwt is expired
+ the client will send again the request  with refresh token route in request body
+ if the access token is valid then the server will again send back the pair of new refresh token and access token
+ and if te refresh token is not valid or blacklisted the server will send the response 403 unauthorized
+
+ the previous refresh token is blacklisted by overwriting the old refresh token with the new  one in redis
+ to logout we simply remove the access token and refresh token client side and we remove refresh token from redis as well
+
+
+ ================== REDIS INSTALLATION =====================
+Redis ia a cache level memory data structure for nodejs
+For redis installation locally inside your computer
+download and install redis isntallation msi file 
+and its path in environment variable that is by default c:/program files/redis
+open the terminal and type redis-cli ping to test if it is install
+then install a package using npm install -g redis-commander which basically
+help you to display the data store inside your redis-server locally.  
+Web-UI to display and edit data within multiple different Redis servers.
+
+It has support for the following data types to view, add, update and delete data:
+
+Strings
+Lists
+Sets
+Sorted Set
+Streams (Basic support based on HFXBus project from https://github.com/exocet-engineering/hfx-bus, only view/add/delete data)
+ReJSON documents (Basic support, only for viewing values of ReJSON type keys)
+
+to add data key  in redis 
+SET key_name value_name  e.g SET name sumreen
+
+ to get data key in redis
+ GET key_name  e.g GET name
+
+ to delete data key
+ DEL key_name e.g DEL name
+
+ to add key with expiration time use EX PX and so on 
+ EX for defining time in seconds
+ PX milliseconds
+
+ SET key_name value EX 10
+
+============ REDIS SETUP IN PROJECT ================
+so far we have done redis setup locally to connect redis db with our project
+we need to follow some steps 
+
+1. first install node redis package in your project npm install redis
+2. create a client instance of redis using code mention in helper/redis_init.js
+3. import helper in your file where you wany to use it
+
+const client = require('./helper/redis_init')
+
+this is how we can set and get the values from redis db 
+client.SET("foo", 'bar')
+client.GET("foo", (err, val) => {
+    if (err) console.log(err.message)
+    console.log(val)
+})
+ 
+======================== SENDGRID EMAIL SETUP ==============================
+1. first goto sendgrid twillo and register account
+after that goto settings create click on account verification add the email and details which you want to use for sending and recieving email
+then goto api key in settings and create api key pass the api key name copy the key and paste it inside the environment variables
+
+2. then install the npm package  @sendgrid/mail inside your project 
+
+======================= UPLOAD |DOWNLOAD| DELETE | File to Amazon S3 Bucket =================
+first you need an aws account with s3 set up then create bucket setup enable on it
+
